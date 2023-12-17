@@ -1,6 +1,13 @@
 use std::vec;
 use rand::{thread_rng, Rng, seq::SliceRandom};
 
+use crossterm::{
+    event::{self, KeyCode, KeyEvent, KeyModifiers},
+    terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
+    ExecutableCommand,
+};
+use std::io::{self, Write};
+
 type Tile = u32;
 type Board = Vec<Vec<Tile>>;
 
@@ -38,6 +45,36 @@ fn print_board(board: &mut Board) {
         println!("+----+----+----+----+");
     }
 
+}
+
+fn handle_input(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
+    // Entering raw mode
+    io::stdout().execute(EnterAlternateScreen)?;
+    terminal::enable_raw_mode()?;
+
+    loop {
+        if event::poll(std::time::Duration::from_millis(100))? {
+            if let event::Event::Key(KeyEvent { code, modifiers, .. }) = event::read()? {
+                match code {
+                    KeyCode::Char('w') | KeyCode::Up => move_up(board),
+                    KeyCode::Char('s') | KeyCode::Down => move_down(board),
+                    KeyCode::Char('a') | KeyCode::Left => move_left(board),
+                    KeyCode::Char('d') | KeyCode::Right => move_right(board),
+                    KeyCode::Char('q') | KeyCode::Esc => break,
+                    _ => {}
+                }
+
+                if modifiers.contains(KeyModifiers::CONTROL) && code == KeyCode::Char('c') {
+                    break;
+                }
+            }
+        }
+    }
+
+    // Exiting raw mode
+    terminal::disable_raw_mode()?;
+    io::stdout().execute(LeaveAlternateScreen)?;
+    Ok(())
 }
 
 fn main() {
