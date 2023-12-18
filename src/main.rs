@@ -2,14 +2,24 @@ use std::vec;
 use rand::{thread_rng, Rng, seq::SliceRandom};
 
 use crossterm::{
-    event::{self, KeyCode, KeyEvent, KeyModifiers},
-    terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
-    ExecutableCommand,
+    event::{self, KeyCode, KeyEvent, KeyModifiers, read},
+    ErrorKind,
 };
+
+
 use std::io::{self, Write};
+
 
 type Tile = u32;
 type Board = Vec<Vec<Tile>>;
+enum UserAction {
+    MoveUp,
+    MoveDown,
+    MoveLeft,
+    MoveRight,
+    Quit,
+    None,
+}
 
 fn init_board() -> Board {
     let mut board = vec![vec![0; 4]; 4];
@@ -18,6 +28,10 @@ fn init_board() -> Board {
     add_random_tile(&mut board);
     board
 }
+
+fn is_game_over(board: &mut Board) -> bool {
+    true
+} 
 
 fn add_random_tile(board: &mut Board) {
     let mut empty_tiles = Vec::new();
@@ -44,40 +58,48 @@ fn print_board(board: &mut Board) {
         println!("|");
         println!("+----+----+----+----+");
     }
+}
 
+fn get_user_input() -> Result<UserAction, ErrorKind> {
+    if event::poll(std::time::Duration::from_millis(100))? {
+        if let event::Event::Key(KeyEvent { code, modifiers, .. }) = read()? {
+            match code {
+                KeyCode::Up | KeyCode::Char('w') => Ok(UserAction::MoveUp),
+                KeyCode::Down | KeyCode::Char('s') => Ok(UserAction::MoveDown),
+                KeyCode::Left | KeyCode::Char('a') => Ok(UserAction::MoveLeft),
+                KeyCode::Right | KeyCode::Char('d') => Ok(UserAction::MoveRight),
+                KeyCode::Esc | KeyCode::Char('q') => Ok(UserAction::Quit),
+                _ => Ok(UserAction::None),
+            }
+        } else {
+            Ok(UserAction::None)
+        }
+    } else {
+        Ok(UserAction::None)
+    }
 }
 
 fn handle_input(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
-    // Entering raw mode
-    io::stdout().execute(EnterAlternateScreen)?;
-    terminal::enable_raw_mode()?;
-
     loop {
-        if event::poll(std::time::Duration::from_millis(100))? {
-            if let event::Event::Key(KeyEvent { code, modifiers, .. }) = event::read()? {
-                match code {
-                    KeyCode::Char('w') | KeyCode::Up => move_up(board),
-                    KeyCode::Char('s') | KeyCode::Down => move_down(board),
-                    KeyCode::Char('a') | KeyCode::Left => move_left(board),
-                    KeyCode::Char('d') | KeyCode::Right => move_right(board),
-                    KeyCode::Char('q') | KeyCode::Esc => break,
-                    _ => {}
-                }
-
-                if modifiers.contains(KeyModifiers::CONTROL) && code == KeyCode::Char('c') {
-                    break;
-                }
-            }
+        match get_user_input()? {
+            UserAction::MoveUp => move_up(board),
+            UserAction::MoveDown => move_down(board),
+            UserAction::MoveLeft => move_left(board),
+            UserAction::MoveRight => move_right(board),
+            UserAction::Quit => break,
+            UserAction::None => continue,
         }
     }
-
-    // Exiting raw mode
-    terminal::disable_raw_mode()?;
-    io::stdout().execute(LeaveAlternateScreen)?;
     Ok(())
 }
 
 fn main() {
     let mut board = init_board();
-    print_board(&mut board);
+
+    while is_game_over(&mut board) {
+        print_board(&mut board);
+        get_user_input();
+        handle_input(&mut board);
+        add_random_tile(&mut board);
+    }
 }
