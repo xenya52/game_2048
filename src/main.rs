@@ -30,8 +30,28 @@ fn init_board() -> Board {
 }
 
 fn is_game_over(board: &mut Board) -> bool {
+    // Check for any empty spaces
+    if board.iter().any(|row| row.iter().any(|&tile| tile == 0)) {
+        return false;
+    }
+
+    // Check for possible merges horizontally and vertically
+    for i in 0..4 {
+        for j in 0..4 {
+            // Check horizontally
+            if j < 3 && board[i][j] == board[i][j + 1] {
+                return false;
+            }
+            // Check vertically
+            if i < 3 && board[i][j] == board[i + 1][j] {
+                return false;
+            }
+        }
+    }
+
+    // No empty spaces and no possible merges
     true
-} 
+}
 
 fn add_random_tile(board: &mut Board) {
     let mut empty_tiles = Vec::new();
