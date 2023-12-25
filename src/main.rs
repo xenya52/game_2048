@@ -99,6 +99,46 @@ fn get_user_input() -> Result<UserAction, ErrorKind> {
     }
 }
 
+fn move_up(board: &mut Board) {
+    println!("up");
+}
+fn move_down(board: &mut Board) {
+    println!("down")
+}
+fn move_left(board: &mut Board) {
+    for row in board.iter_mut() {
+        // Step 1: Shift all tiles to the left
+        let mut last_non_zero = 0;
+        for i in 0..4 {
+            if row[i] != 0 {
+                row.swap(i, last_non_zero);
+                last_non_zero += 1;
+            }
+        }
+
+        // Step 2: Merge tiles
+        for i in 0..3 {
+            if row[i] == row[i + 1] && row[i] != 0 {
+                row[i] *= 2;
+                row[i + 1] = 0;
+            }
+        }
+
+        // Step 3: Shift again after merging
+        let mut last_non_zero = 0;
+        for i in 0..4 {
+            if row[i] != 0 {
+                row.swap(i, last_non_zero);
+                last_non_zero += 1;
+            }
+        }
+    }
+    println!("left")
+}
+fn move_right(board: &mut Board) {
+    println!("right")
+}
+
 fn handle_input(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
     loop {
         match get_user_input()? {
@@ -115,11 +155,8 @@ fn handle_input(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
 
 fn main() {
     let mut board = init_board();
-
-    while is_game_over(&mut board) {
         print_board(&mut board);
         get_user_input();
         handle_input(&mut board);
         add_random_tile(&mut board);
-    }
 }
