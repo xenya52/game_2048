@@ -133,14 +133,43 @@ fn move_left(board: &mut Board) {
             }
         }
     }
-    println!("left")
+    println!("left");
 }
 fn move_right(board: &mut Board) {
-    println!("right")
+    /*
+    for row in board.iter_mut() {
+        // Step 1: Shift all tiles to the left
+        let mut last_non_zero = 4;
+        for i in 4..0 {
+            if row[i] != 0 {
+                row.swap(i, last_non_zero);
+                last_non_zero -= 1;
+            }
+        }
+
+        // Step 2: Merge tiles
+        for i in 3..0 {
+            if row[i] == row[i - 1] && row[i] != 0 {
+                row[i] *= 2;
+                row[i - 1] = 0;
+            }
+        }
+
+        // Step 3: Shift again after merging
+        let mut last_non_zero = 4;
+        for i in 4..0 {
+            if row[i] != 0 {
+                row.swap(i, last_non_zero);
+                last_non_zero -= 1;
+            }
+        }
+    }
+    */
+    println!("right");
 }
 
-fn handle_input(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
-    loop {
+fn game_loop(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
+    while !is_game_over(board) {
         match get_user_input()? {
             UserAction::MoveUp => move_up(board),
             UserAction::MoveDown => move_down(board),
@@ -149,6 +178,8 @@ fn handle_input(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
             UserAction::Quit => break,
             UserAction::None => continue,
         }
+        add_random_tile(board);
+        print_board(board);
     }
     Ok(())
 }
@@ -156,7 +187,5 @@ fn handle_input(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
 fn main() {
     let mut board = init_board();
         print_board(&mut board);
-        get_user_input();
-        handle_input(&mut board);
-        add_random_tile(&mut board);
+        game_loop(&mut board);
 }
