@@ -100,9 +100,59 @@ fn get_user_input() -> Result<UserAction, ErrorKind> {
 }
 
 fn move_up(board: &mut Board) {
+    for col in 0..4 {
+        // Compact non-zero tiles upwards
+        let mut compacted = board.iter().map(|row| row[col]).filter(|&tile| tile != 0).collect::<Vec<_>>();
+        
+        // Merge tiles and update compacted vector
+        let mut merged = Vec::new();
+        while let Some(first) = compacted.pop() {
+            if compacted.last() == Some(&first) {
+                merged.push(first * 2);
+                compacted.pop();
+            } else {
+                merged.push(first);
+            }
+        }
+        merged.reverse();
+
+        // Fill in the gaps with zeros
+        while merged.len() < 4 {
+            merged.push(0);
+        }
+
+        // Update the board
+        for (row, &tile) in merged.iter().enumerate() {
+            board[row][col] = tile;
+        }
+    }
     println!("up");
 }
 fn move_down(board: &mut Board) {
+    for col in 0..4 {
+        let mut temp_column: Vec<u32> = vec![0; 4]; // Temporary column to store new values
+        let mut write_index = 3; // Start from the bottom of the column
+
+        // Step 1: Shift down non-zero tiles and merge
+        for row in (0..4).rev() {
+            if board[row][col] != 0 {
+                if temp_column[write_index] == 0 {
+                    temp_column[write_index] = board[row][col];
+                } else if temp_column[write_index] == board[row][col] {
+                    temp_column[write_index] *= 2;
+                    if write_index > 0 { write_index -= 1; } // Move to the next position up
+                } else {
+                    if write_index > 0 { write_index -= 1; } // Move to the next position up
+                    temp_column[write_index] = board[row][col];
+                }
+            }
+        }
+
+        // Step 2: Update the original column with new values
+        for row in 0..4 {
+            board[row][col] = temp_column[row];
+        }
+    }
     println!("down")
 }
 fn move_left(board: &mut Board) {
@@ -136,35 +186,37 @@ fn move_left(board: &mut Board) {
     println!("left");
 }
 fn move_right(board: &mut Board) {
-    /*
     for row in board.iter_mut() {
-        // Step 1: Shift all tiles to the left
-        let mut last_non_zero = 4;
-        for i in 4..0 {
+        // Step 1: Shift all tiles to the right
+        let mut last_non_zero = 3;
+        for i in (0..4).rev() {
             if row[i] != 0 {
                 row.swap(i, last_non_zero);
-                last_non_zero -= 1;
+                if last_non_zero > 0 {
+                    last_non_zero -= 1;
+                }
             }
         }
 
         // Step 2: Merge tiles
-        for i in 3..0 {
-            if row[i] == row[i - 1] && row[i] != 0 {
-                row[i] *= 2;
-                row[i - 1] = 0;
+        for i in (0..3).rev() {
+            if row[i] == row[i + 1] && row[i] != 0 {
+                row[i + 1] *= 2;
+                row[i] = 0;
             }
         }
 
         // Step 3: Shift again after merging
-        let mut last_non_zero = 4;
-        for i in 4..0 {
+        let mut last_non_zero = 3;
+        for i in (0..4).rev() {
             if row[i] != 0 {
                 row.swap(i, last_non_zero);
-                last_non_zero -= 1;
+                if last_non_zero > 0 {
+                    last_non_zero -= 1;
+                }
             }
         }
     }
-    */
     println!("right");
 }
 
