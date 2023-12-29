@@ -53,6 +53,15 @@ fn is_game_over(board: &mut Board) -> bool {
     true
 }
 
+fn board_changed(new_board: &mut Board, old_board: &Board) -> bool {
+    if new_board != old_board {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 fn add_random_tile(board: &mut Board) {
     let mut empty_tiles = Vec::new();
     for (i, row) in board.iter().enumerate() {
@@ -126,7 +135,6 @@ fn move_up(board: &mut Board) {
             board[row][col] = tile;
         }
     }
-    println!("up");
 }
 fn move_down(board: &mut Board) {
     for col in 0..4 {
@@ -153,7 +161,6 @@ fn move_down(board: &mut Board) {
             board[row][col] = temp_column[row];
         }
     }
-    println!("down")
 }
 fn move_left(board: &mut Board) {
     for row in board.iter_mut() {
@@ -183,7 +190,6 @@ fn move_left(board: &mut Board) {
             }
         }
     }
-    println!("left");
 }
 fn move_right(board: &mut Board) {
     for row in board.iter_mut() {
@@ -217,11 +223,11 @@ fn move_right(board: &mut Board) {
             }
         }
     }
-    println!("right");
 }
 
-fn game_loop(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
+fn game_loop(board: &mut Board) -> Result<(), crossterm::ErrorKind> {
     while !is_game_over(board) {
+        let old_board: Board = board.clone();
         match get_user_input()? {
             UserAction::MoveUp => move_up(board),
             UserAction::MoveDown => move_down(board),
@@ -230,7 +236,10 @@ fn game_loop(board: &mut Vec<Vec<u32>>) -> Result<(), crossterm::ErrorKind> {
             UserAction::Quit => break,
             UserAction::None => continue,
         }
-        add_random_tile(board);
+        if board_changed(board, &old_board) {
+            add_random_tile(board);
+        }
+        println!("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         print_board(board);
     }
     Ok(())
