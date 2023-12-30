@@ -1,4 +1,4 @@
-use std::vec;
+use std::{vec, f32::MAX_10_EXP};
 use rand::{thread_rng, Rng, seq::SliceRandom};
 
 use crossterm::{
@@ -86,6 +86,50 @@ fn print_board(board: &mut Board) {
         }
         println!("|");
         println!("+----+----+----+----+");
+    }
+}
+
+fn big_ascii(digit: u32) {
+    match (digit) {
+        0 =>
+        print!("  AAA  \n A   A  \nA     A\nA     A\nA     A\n A   A  \n  AAA  \n"),
+        1 => 
+        print!("    B    \n   BB   \n  B B   \n    B    \n    B    \n    B    \n  BBBBB  \n"),
+        2 => 
+        print!("   CCC   \n  C   C  \n      C\n    CC\n   C   \n  C    \n  CCCCC  \n"),
+        3 => 
+        print!("  DDDDD  \n      D  \n     D   \n   DDD   \n    D   \n     D  \n  DDDDD  \n"),
+        4 => 
+        print!("     E   \n    EE  \n   E  E   \n  E  E   \n  EEEEEE  \n     E   \n     E   \n"),
+        5 => 
+        print!("  FFFFF  \n  F      \n  FFFF   \n       F  \n       F  \n  F   F  \n   FFF   \n"),
+        6 => big_ascii(6),
+        7 => big_ascii(7),
+        8 => big_ascii(8),
+        9 => big_ascii(9),
+        _ => println!("Error in print_board_better"),
+    }
+}
+
+fn get_number_digits(num: &u32) -> impl Iterator<Item = u32> {
+    num.to_string()
+        .chars()
+        .map(|d| d.to_digit(10).unwrap())
+        .collect::<Vec<_>>()
+        .into_iter()
+}
+
+fn print_board_better(board: &mut Board) {
+    println!("-------+-------+-------+-------+-------");
+    for (i,row) in board.iter().enumerate() {
+        for (j, row) in row.iter().enumerate() {
+            let digits = get_number_digits(row);
+            for digit in digits {
+                big_ascii(digit);
+            }
+        }
+        println!("");
+        println!("-------+-------+-------+-------+-------");
     }
 }
 
@@ -241,6 +285,7 @@ fn game_loop(board: &mut Board) -> Result<(), crossterm::ErrorKind> {
         }
         println!("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         print_board(board);
+        print_board_better(board);
     }
     Ok(())
 }
@@ -248,5 +293,6 @@ fn game_loop(board: &mut Board) -> Result<(), crossterm::ErrorKind> {
 fn main() {
     let mut board = init_board();
         print_board(&mut board);
+        print_board_better(&mut board);
         game_loop(&mut board);
 }
