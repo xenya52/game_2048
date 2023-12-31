@@ -103,8 +103,10 @@ fn big_ascii(digit: u32) {
         print!("     E   \n    EE  \n   E  E   \n  E  E   \n  EEEEEE  \n     E   \n     E   \n"),
         5 => 
         print!("  FFFFF  \n  F      \n  FFFF   \n       F  \n       F  \n  F   F  \n   FFF   \n"),
-        6 => big_ascii(6),
-        7 => big_ascii(7),
+        6 => 
+        print!("   GGG   \n  G      \n  G      \n  GGGGG  \n  G   G  \n  G   G  \n   GGG   \n"),
+        7 => 
+        print!("  HHHHH  \n      H  \n     H   \n    H    \n   H     \n  H      \n  H      \n"),
         8 => big_ascii(8),
         9 => big_ascii(9),
         _ => println!("Error in print_board_better"),
@@ -285,7 +287,6 @@ fn game_loop(board: &mut Board) -> Result<(), crossterm::ErrorKind> {
         }
         println!("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         print_board(board);
-        print_board_better(board);
     }
     Ok(())
 }
@@ -293,6 +294,5 @@ fn game_loop(board: &mut Board) -> Result<(), crossterm::ErrorKind> {
 fn main() {
     let mut board = init_board();
         print_board(&mut board);
-        print_board_better(&mut board);
         game_loop(&mut board);
 }
