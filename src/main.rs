@@ -92,23 +92,25 @@ fn print_board(board: &mut Board) {
 fn big_ascii(digit: u32) {
     match (digit) {
         0 =>
-        print!("  AAA  \n A   A  \nA     A\nA     A\nA     A\n A   A  \n  AAA  \n"),
+        print!("  AAA    \n A   A   \nA     A  \nA     A  \nA     A  \n A   A   \n  AAA    \n"),
         1 => 
-        print!("    B    \n   BB   \n  B B   \n    B    \n    B    \n    B    \n  BBBBB  \n"),
+        print!("    B    \n   BB    \n  B B    \n    B    \n    B    \n    B    \n  BBBBB  \n"),
         2 => 
-        print!("   CCC   \n  C   C  \n      C\n    CC\n   C   \n  C    \n  CCCCC  \n"),
+        print!("   CCC   \n  C   C  \n      C  \n    CC   \n   C     \n  C      \n  CCCCC  \n"),
         3 => 
-        print!("  DDDDD  \n      D  \n     D   \n   DDD   \n    D   \n     D  \n  DDDDD  \n"),
+        print!("  DDDDD  \n      D  \n     D   \n   DDD   \n    D    \n     D   \n  DDDDD  \n"),
         4 => 
-        print!("     E   \n    EE  \n   E  E   \n  E  E   \n  EEEEEE  \n     E   \n     E   \n"),
+        print!("     E   \n    EE   \n  E  E   \n  E  E   \n  EEEEEE \n     E   \n     E   \n"),
         5 => 
-        print!("  FFFFF  \n  F      \n  FFFF   \n       F  \n       F  \n  F   F  \n   FFF   \n"),
+        print!("  FFFFF  \n  F      \n  FFFF   \n       F \n      F  \n  F   F  \n   FFF   \n"),
         6 => 
         print!("   GGG   \n  G      \n  G      \n  GGGGG  \n  G   G  \n  G   G  \n   GGG   \n"),
         7 => 
         print!("  HHHHH  \n      H  \n     H   \n    H    \n   H     \n  H      \n  H      \n"),
-        8 => big_ascii(8),
-        9 => big_ascii(9),
+        8 =>
+        print!("   III   \n  I   I  \n  I   I  \n   III   \n  I   I  \n  I   I  \n   III   \n"),
+        9 => 
+        print!("   JJJ   \n  J   J  \n  J   J  \n   JJJJ  \n      J  \n      J  \n   JJJ   \n"),
         _ => println!("Error in print_board_better"),
     }
 }
