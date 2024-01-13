@@ -1,5 +1,6 @@
 use std::{vec, f32::MAX_10_EXP};
 use rand::{thread_rng, Rng, seq::SliceRandom};
+use colorized::*;
 
 use crossterm::{
     event::{self, KeyCode, KeyEvent, KeyModifiers, read},
@@ -29,12 +30,59 @@ fn init_board() -> Board {
     board
 }
 
+fn winner_screen() {
+    print!("{}",Colors::YellowFg.value());
+    println!("Art by Susie Oviatt");
+    println!("                   .,,. ");
+    println!("            .,v%;mmmmmmmm;%%vv,. ");
+    println!("         ,vvv%;mmmvv;vvvmmm;%vvvv,    .,,.");
+    println!("  ,, ,vvvnnv%;mmmvv;%%;vvmmm;%vvvv%;mmmmmmm, ");
+    println!(",mmmmmm;%%vv%;mmmvv;%%;vvmmm;%v%;mmmmmmmmmmm ");
+    println!("mmmmmmmmmmm;%%;mmmvv%;vvmmm;%mmmmmmmmmmmmmm' ");
+    println!("`mmmmmmmmmmmmmm%;mmv;vmmm;mmmmmmm;%vvvvvv' ");
+    println!("    `%%%%%;mmmmmmmm;v%v;mmmmmm;%vvvnnvv' ");
+    println!("     vvvvvv%%%%;mmmm%;mmmmmm;%vvvnnnnvv ");
+    println!("     `vvnnnnvvv%%%;m;mmmmm;%vvnnmmnnvv' ");
+    println!("      vvnmmnnnnvvv%%mmmm;%vvnnmmmnnnvv ");
+    println!("      `vvnmmmnnvvv%mmm;%vvnnmmmmnnnvv'");
+    println!("       `vvnmmmmvv%mmm;%vvnnmmmmnnnvv' ");
+    println!("        `vvnmmmvv%mm;%vvvnnmmmnnvvv' ");
+    println!("          `vvnmmvv%m;%vvvvnmnvvvv' ");
+    println!("           .;;vvvvvm;%vvvvvvvv' ");
+    println!("        .;;;;;;;;;;;;;;;;;;;;, ");
+    println!("       ;;;;;;';;;;;;;;;;;'`;;;;;, ");
+    println!("      .;;;'    `;;;;;;;;'   `;;;;;. ");
+    println!("     .;;'        `;;;;;'      `;;;; ");
+    println!("     ;'           :`;;'         ;;' ");
+    println!("     ;            : ;'    ,    ,'             .");
+    println!("      `           :'.:   .;;,.        .,;;;;;;' ");
+    println!("                  ::::   ;;,;;;,     ;;;,;;;;' ");
+    println!("                  ;;;;   `;;;,;;    .,';;;;' ");
+    println!("                  ;;;;      `';; ,;;' ");
+    println!("                ,;;;;;         .;',. ");
+    println!("                  `;;;;       .;'  ';,. ");
+    println!("                   `;;;.     .;'   ,;;,;;,. ");
+    println!("                    ;;;;    .;'    `;;;;,;;; ");
+    println!("   You won!!!       ;;;;   .;'       `;;,;;'");
+    println!("                    `;;;,;;'           `;' ");
+    println!("                     ;;;; ");
+    println!("                     ;;;;. ");
+    println!("                     `;;;;;,. ");
+    println!("                      ;;;;' ");
+    println!("                      ;;;; ");
+    println!("                      ;;;; ");
+    print!("{}",Colors::Reset.value());
+}
+
 fn is_game_over(board: &mut Board) -> bool {
+    if board.iter().any(|row| row.iter().any(|&tile| tile == 2048)) {
+        winner_screen();
+        return true;
+    }
     // Check for any empty spaces
     if board.iter().any(|row| row.iter().any(|&tile| tile == 0)) {
         return false;
     }
-
     // Check for possible merges horizontally and vertically
     for i in 0..4 {
         for j in 0..4 {
@@ -82,61 +130,28 @@ fn print_board(board: &mut Board) {
     println!("+----+----+----+----+");
     for (i,row) in board.iter().enumerate() {
         for (j, row) in row.iter().enumerate() {
-            print!("|{:4}",row);
+            match row {
+                0    => print!("|{}",Colors::WhiteFg.value()),
+                2    => print!("|{}",Colors::CyanFg.value()),
+                4    => print!("|{}",Colors::BlueFg.value()),
+                8    => print!("|{}",Colors::MagentaFg.value()),
+                16   => print!("|{}",Colors::RedFg.value()),
+                32   => print!("|{}",Colors::CyanFg.value()),
+                64   => print!("|{}",Colors::BlueFg.value()),
+                128  => print!("|{}",Colors::MagentaFg.value()),
+                256  => print!("|{}",Colors::RedFg.value()),
+                512  => print!("|{}",Colors::CyanFg.value()),
+                1024 => print!("|{}",Colors::BlueFg.value()),
+                2048 => print!("|{}",Colors::YellowFg.value()),
+                _ => print!("{}",Colors::Reset.value())
+            }
+            print!("{:4}", row);
+            print!("{}",Colors::Reset.value());
         }
         println!("|");
         println!("+----+----+----+----+");
     }
 }
-
-fn big_ascii(digit: u32) {
-    match (digit) {
-        0 =>
-        print!("  AAA    \n A   A   \nA     A  \nA     A  \nA     A  \n A   A   \n  AAA    \n"),
-        1 => 
-        print!("    B    \n   BB    \n  B B    \n    B    \n    B    \n    B    \n  BBBBB  \n"),
-        2 => 
-        print!("   CCC   \n  C   C  \n      C  \n    CC   \n   C     \n  C      \n  CCCCC  \n"),
-        3 => 
-        print!("  DDDDD  \n      D  \n     D   \n   DDD   \n    D    \n     D   \n  DDDDD  \n"),
-        4 => 
-        print!("     E   \n    EE   \n  E  E   \n  E  E   \n  EEEEEE \n     E   \n     E   \n"),
-        5 => 
-        print!("  FFFFF  \n  F      \n  FFFF   \n       F \n      F  \n  F   F  \n   FFF   \n"),
-        6 => 
-        print!("   GGG   \n  G      \n  G      \n  GGGGG  \n  G   G  \n  G   G  \n   GGG   \n"),
-        7 => 
-        print!("  HHHHH  \n      H  \n     H   \n    H    \n   H     \n  H      \n  H      \n"),
-        8 =>
-        print!("   III   \n  I   I  \n  I   I  \n   III   \n  I   I  \n  I   I  \n   III   \n"),
-        9 => 
-        print!("   JJJ   \n  J   J  \n  J   J  \n   JJJJ  \n      J  \n      J  \n   JJJ   \n"),
-        _ => println!("Error in print_board_better"),
-    }
-}
-
-fn get_number_digits(num: &u32) -> impl Iterator<Item = u32> {
-    num.to_string()
-        .chars()
-        .map(|d| d.to_digit(10).unwrap())
-        .collect::<Vec<_>>()
-        .into_iter()
-}
-
-fn print_board_better(board: &mut Board) {
-    println!("-------+-------+-------+-------+-------");
-    for (i,row) in board.iter().enumerate() {
-        for (j, row) in row.iter().enumerate() {
-            let digits = get_number_digits(row);
-            for digit in digits {
-                big_ascii(digit);
-            }
-        }
-        println!("");
-        println!("-------+-------+-------+-------+-------");
-    }
-}
-
 fn get_user_input() -> Result<UserAction, ErrorKind> {
     if event::poll(std::time::Duration::from_millis(100))? {
         if let event::Event::Key(KeyEvent { code, modifiers, .. }) = read()? {
