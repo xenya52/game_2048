@@ -310,10 +310,10 @@ fn game_loop(board: &mut Board) -> Result<(), crossterm::ErrorKind> {
 
 fn main() {
     let mut board = init_board();
-    let mut stdout = io::stdout();
-    if let Err(e) = execute!(stdout, crossterm::terminal::SetSize(15, 15)){
-        println!("Error: {}", e);
-      }
+        let mut stdout = io::stdout();
+        if let Err(e) = execute!(stdout, crossterm::terminal::SetSize(25, 25)){
+            println!("Error: {}", e);
+        }
         print_board(&mut board);
         game_loop(&mut board);
 }
